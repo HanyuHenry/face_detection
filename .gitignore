@@ -1,0 +1,4 @@
+datasets/images_singleface/
+datasets/raw/
+models/__pycache__/
+scripts/__pycache__/
