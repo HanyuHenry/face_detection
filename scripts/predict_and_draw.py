@@ -14,8 +14,8 @@ from models.face_model import FaceBoxRegressor
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ✅ 预测使用原始大小图像
-img_dir = BASE_DIR / "datasets/images_Prepared"
-annotation_path = BASE_DIR / "datasets/annotations.json"
+img_dir = BASE_DIR / "datasets/images_singleface"
+annotation_path = BASE_DIR / "datasets/annotations_singleface.json"
 model_path = BASE_DIR / "face_box_model.pt"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

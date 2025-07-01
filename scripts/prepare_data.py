@@ -10,7 +10,7 @@ img_root = BASE_DIR / "datasets/raw/images"
 label_file = BASE_DIR / "datasets/raw/wider_face_train_bbx_gt.txt"
 output_img_dir = BASE_DIR / "datasets/images_singleface"  # 只保留单人脸图
 output_json = BASE_DIR / "datasets/annotations_singleface.json"
-max_images = 3000
+max_images = 10000
 
 # === 创建输出目录 ===
 output_img_dir.mkdir(parents=True, exist_ok=True)

@@ -68,7 +68,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # ✅ 训练循环
-    epochs = 20
+    epochs = 200
     for epoch in range(start_epoch, epochs):
         total_loss = 0.0
         model.train()
