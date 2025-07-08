@@ -1,55 +1,40 @@
 import os
 import sys
-import torch
 import json
 import random
 from pathlib import Path
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from torchvision import transforms
 
-
-# ✅ 项目路径
-# ✅ 加上这两行让 Python 能找到 models 目录
+# ✅ 添加根路径
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
-from models.face_model import get_face_detector
+# ✅ 导入封装类
+from scripts.inference import FaceDetector
 
 # ✅ 路径设置
 ANNOTATION_PATH = BASE_DIR / "datasets" / "annotations.json"
 IMG_BASE = BASE_DIR / "datasets" / "raw" / "images"
-MODEL_PATH = BASE_DIR / "checkpoint.pt"
+MODEL_PATH = BASE_DIR / "best_model.pt"
 
-# ✅ 加载模型
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = get_face_detector(num_classes=2)
-checkpoint = torch.load(MODEL_PATH, map_location=device)
-model.load_state_dict(checkpoint['model'])
-model.to(device)
-model.eval()
-
-# ✅ 图像预处理
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor()
-])
+# ✅ 初始化模型
+detector = FaceDetector()
+detector.load_weights(MODEL_PATH)
 
 # ✅ 显示图像带框（蓝色：真实框，红色：预测框）
-def visualize(image, gt_boxes, pred_boxes, pred_scores):
+def visualize(pil_image, gt_boxes, pred_boxes, pred_scores, conf_thresh=0.1):
     fig, ax = plt.subplots(1)
-    ax.imshow(image)
+    ax.imshow(pil_image)
 
-    # 画真实框（蓝色）
     for box in gt_boxes:
         x, y, w, h = box["x"], box["y"], box["w"], box["h"]
         rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor='blue', facecolor='none')
         ax.add_patch(rect)
 
-    # 画预测框（红色）
     for box, score in zip(pred_boxes, pred_scores):
-        if score >= 0.5:
+        if score >= conf_thresh:
             x1, y1, x2, y2 = box.tolist()
             rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=2, edgecolor='red', facecolor='none')
             ax.add_patch(rect)
@@ -59,6 +44,7 @@ def visualize(image, gt_boxes, pred_boxes, pred_scores):
     plt.tight_layout()
     plt.show()
 
+# ✅ 主程序
 if __name__ == "__main__":
     with open(ANNOTATION_PATH, "r") as f:
         data = json.load(f)
@@ -76,12 +62,12 @@ if __name__ == "__main__":
             continue
 
         image = Image.open(img_path).convert("RGB")
-        resized = transform(image).unsqueeze(0).to(device)
 
-        with torch.no_grad():
-            preds = model(resized)[0]
-            pred_boxes = preds["boxes"].cpu()
-            pred_scores = preds["scores"].cpu()
+        # ✅ 使用封装预测
+        pred_boxes, pred_scores = detector.predict(image)
 
-        # 🔍 显示图像 + 真实框 + 预测框
+        print(f"\n📷 图像: {rel_path}")
+        for i, (box, score) in enumerate(zip(pred_boxes, pred_scores)):
+            print(f"  ▶ Box {i+1}: {box.tolist()}, Score: {score.item():.4f}")
+
         visualize(image, gt_boxes, pred_boxes, pred_scores)
