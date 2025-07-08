@@ -66,7 +66,7 @@ python scripts/predict_and_draw.py
 
 The following augmentations are applied during training:
 
-- `transforms.Resize((256, 256))`
+- `transforms.Resize((640, 640))`
 - `transforms.RandomHorizontalFlip()`
 - `transforms.ColorJitter()`
 - `transforms.RandomRotation(10)`
