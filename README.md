@@ -1,78 +1,88 @@
+Face Detection - PyTorch Project
+=================================
 
-# Face Detection with Single-Face Regression
+This is a face detection project built with PyTorch. It supports multi-face detection, training, inference, and visualization. It is intended for personal research, learning, or deployment use.
 
-This project implements a simple face detection system using bounding box regression.
-It is designed to work with images containing **only one face**, using the WIDER FACE dataset.
-
-## Project Structure
-
-```
+Project Structure
+-----------------
 face_detection/
 │
-├── datasets/
-│   ├── raw/                         # Raw WIDER FACE data
-│   │   ├── images/                 # Original images
-│   │   └── wider_face_train_bbx_gt.txt  # Original annotations
-│   ├── images_singleface/          # ✅ Filtered images with only one face
-│   └── annotations_singleface.json # ✅ Corresponding annotations (generated automatically)
+├── datasets/                # Image data and annotations
+│   ├── raw/images/          # Input images (.jpg)
+│   └── annotations.json     # Ground-truth annotations
 │
 ├── models/
-│   └── face_model.py               # Model definition
+│   └── face_model.py        # Model architecture definition
 │
 ├── scripts/
-│   ├── prepare_singleface.py       # Script to extract single-face data
-│   └── predict_and_draw.py         # Script to visualize predictions
+│   └── face_dataset.py      # Custom dataset loader
 │
-├── train.py                        # Training script
-├── face_box_model.pt               # Trained model weights
-└── last_epoch.txt                  # Tracks last training epoch
-```
+├── train.py                 # Main training script
+├── predict.py               # Inference and visualization
+├── .gitignore               # Git exclusion rules
+└── README.txt               # This file
 
-## Installation
+Dependencies
+------------
+- Python 3.8+
+- PyTorch
+- torchvision
+- tqdm
+- matplotlib
+- Pillow
 
-```bash
-pip install torch torchvision pillow matplotlib
-```
+To install dependencies:
+    pip install torch torchvision matplotlib tqdm pillow
 
-## Data Preparation
+Data Format
+-----------
+Images go into: datasets/raw/images/
 
-1. Download and unzip the **WIDER FACE Training Images** and the `wider_face_train_bbx_gt.txt` file to `datasets/raw/`
-2. Run the following script to filter and prepare single-face images:
+The annotation file should be in JSON format (datasets/annotations.json) like:
+[
+  {
+    "filename": "img1.jpg",
+    "boxes": [
+      {"x": 30, "y": 40, "w": 60, "h": 80}
+    ]
+  },
+  ...
+]
 
-```bash
-python scripts/prepare_singleface.py
-```
+Training
+--------
+To start training:
+    python train.py
 
-## Training
+Checkpoints:
+- checkpoint.pt          : Auto-saved after each epoch
+- best_model.pt          : Saved when loss improves
+- Checks/backup_epoch_XX.pt : Saved every 5 epochs
 
-```bash
-python train.py
-```
+Inference / Visualization
+-------------------------
+To visualize detection results on 3 random images:
+    python predict.py
 
-- Trains on the `datasets/images_singleface` folder.
-- Saves model weights to `face_box_model.pt`.
+It will display:
+- Red boxes  : predicted bounding boxes (after NMS)
+- Blue boxes : ground truth boxes (if annotations exist)
 
-## Visualization
+Git Notice
+----------
+Large files like 'best_model.pt' are excluded by .gitignore and should not be pushed to GitHub.
+If you accidentally committed a large file, remove it using:
+    git rm --cached best_model.pt
+    git commit -m "Remove large model file"
+    git push origin main --force
 
-```bash
-python scripts/predict_and_draw.py
-```
+Planned Features
+----------------
+- Annotation UI support
+- Real-time video stream detection
+- Lightweight models like YOLOv8
 
-- Randomly selects 5 images.
-- Shows red predicted box and green ground truth boxes.
-- Coordinates are printed in the terminal.
+Contact
+-------
+For feedback, bugs, or contributions, please open an issue on GitHub.
 
-## Data Augmentation
-
-The following augmentations are applied during training:
-
-- `transforms.Resize((256, 256))`
-- `transforms.RandomHorizontalFlip()`
-- `transforms.ColorJitter()`
-- `transforms.RandomRotation(10)`
-
-## Notes
-
-- The model assumes only **one face per image**.
-- Training on multi-face images will reduce performance.
-- For multi-face detection, consider switching to detection models like YOLO or Faster R-CNN.
