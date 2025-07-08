@@ -1,4 +1,32 @@
-datasets/images_singleface/
+# ✅ 忽略模型权重和检查点文件
+best_model.pt
+checkpoint.pt
+
+# ✅ 忽略训练中间保存的模型
+Checks/
+Checks/*
+
+# ✅ 忽略数据标注文件
+datasets/annotations.json
+
+# ✅ 忽略原始图像数据（如不想上传完整数据集）
 datasets/raw/
-models/__pycache__/
-scripts/__pycache__/
+datasets/Test_data/
+
+# ✅ 忽略 Python 编译缓存
+__pycache__/
+*/__pycache__/
+
+# ✅ 忽略 VSCode 设置（可选）
+.vscode/
+
+# ✅ 忽略系统文件
+.DS_Store
+Thumbs.db
+
+# ✅ 忽略 Jupyter 临时文件（如果有）
+*.ipynb_checkpoints
+
+# ✅ 保留空目录结构（如需）
+!Checks/.gitkeep
+!datasets/raw/.gitkeep 
