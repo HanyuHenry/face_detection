@@ -1,3 +1,4 @@
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -52,7 +53,7 @@ def main():
         full_dataset, random.sample(range(len(full_dataset)), data_limit))
 
     dataloader = DataLoader(dataset,
-                            batch_size=4,
+                            batch_size=6,
                             shuffle=True,
                             num_workers=0,
                             pin_memory=True,
@@ -121,3 +122,4 @@ if __name__ == "__main__":
     import multiprocessing
     multiprocessing.freeze_support()
     main()
+import torch
